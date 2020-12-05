@@ -1,0 +1,93 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
+
+func removeFromCards(slice *[]int, index int) []int {
+	newslice := append((*slice)[:index], (*slice)[index+1:]...)
+	return newslice
+}
+
+func randomStrategySelect(cards *[]int) int {
+	randIndex := rand.Intn(len(*cards))
+	selection := (*cards)[randIndex]
+	*cards = removeFromCards(cards, randIndex)
+
+	return selection
+}
+
+func equalStrategySelect(cards *[]int, inputCard int) int {
+	found := -1
+	for index, card := range *cards {
+		if card == inputCard {
+			found = index
+		}
+	}
+
+	if found != -1 {
+		selection := (*cards)[found]
+		*cards = removeFromCards(cards, found)
+		return selection
+	}
+
+	panic("Why are we still here just to suffer?")
+}
+
+func decisionAndScores(deckSelection, player1Selection, player2Selection int) (int, int) {
+	player1Score := 0
+	player2Score := 0
+	fmt.Printf("Player1 Chose: %d; Player2 Chose: %d\n", player1Selection, player2Selection)
+
+	if player1Selection > player2Selection {
+		player1Score = deckSelection
+	} else if player1Selection < player2Selection {
+		player2Score = deckSelection
+	} else {
+		player1Score = deckSelection
+		player2Score = deckSelection
+	}
+	return player1Score, player2Score
+}
+
+func main() {
+	player1Cards := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	player2Cards := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	deckCards := []int{1, 2, 3, 4, 5, 6, 7, 8}
+	player1Scorecard := 0
+	player2Scorecard := 0
+
+	totalDeckCards := len(deckCards)
+
+	for turnCount := 0; turnCount < totalDeckCards; turnCount++ {
+		fmt.Printf("Round %d\n", turnCount)
+
+		deckSelection := randomStrategySelect(&deckCards)
+		fmt.Printf("Deck Card is %d\n", deckSelection)
+
+		player1Selection := randomStrategySelect(&player1Cards)
+		player2Selection := equalStrategySelect(&player2Cards, deckSelection)
+
+		player1Score, player2Score := decisionAndScores(deckSelection, player1Selection, player2Selection)
+		player1Scorecard += player1Score
+		player2Scorecard += player2Score
+
+		fmt.Printf("Player1 score: %d; Player2 score: %d\n", player1Scorecard, player2Scorecard)
+	}
+
+	fmt.Printf("FINAL SCORE : Player1 == %d; Player2 == %d\n", player1Scorecard, player2Scorecard)
+	winner := 0
+	if player1Scorecard > player2Scorecard {
+		winner = 1
+	} else {
+		winner = 2
+	}
+
+	fmt.Printf("Winner is Player %d", winner)
+}
