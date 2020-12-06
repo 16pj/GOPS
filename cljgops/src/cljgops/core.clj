@@ -4,10 +4,6 @@
 (defn pickRandomCard [cards]
   (if (> (count cards) 0) (rand-nth cards)))
 
-(defn selectRandomCard [cards]
-  (let [randomCard (pickRandomCard cards)] 
-    [randomCard (remove #(= % randomCard) cards)]))
-
 (defn removeCard [cards card-to-remove] 
   (remove #(= % card-to-remove) cards))
 
